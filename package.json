@@ -1,0 +1,33 @@
+{
+    "name": "Elemental",
+    "description": "UI widgets set",
+    "version": "0.0.1",
+    "keywords": [
+        "angular",
+        "widgets"
+    ],
+    "homepage": "https://github.com/Daggett/elemental",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/Daggett/elemental.git"
+    },
+    "licenses": [
+        {
+            "type": "MIT"
+        }
+    ],
+    "devDependencies": {
+        "grunt": "^0.4.4",
+        "grunt-contrib-uglify": "^0.4.0",
+        "grunt-concurrent": "^0.5.0",
+        "grunt-contrib-clean": "^0.5.0",
+        "grunt-contrib-concat": "^0.3.0",
+        "grunt-contrib-copy": "^0.5.0",
+        "grunt-contrib-watch": "^0.6.1",
+        "grunt-contrib-sass": "^0.7.3",
+        "load-grunt-tasks": "^0.4.0"
+    },
+    "engines": {
+        "node": ">=0.8.0"
+    }
+}

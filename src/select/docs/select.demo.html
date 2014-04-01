@@ -1,0 +1,40 @@
+<!doctype html>
+<html ng-app="app">
+    <head>
+        <script src="file:///Users/daggett/projects/git/staticassets/dist/app/lib/angular/angular.js"></script>
+        <script src="file:///Users/daggett/projects/git/staticassets/dist/app/lib/angular-resource/angular-resource.js"></script>
+        <script src="../select.js"></script>
+        <script src="../../helpers/events.js"></script>
+        <script src="../../module.js"></script>
+        <script>
+            angular.module('app', [
+                'elemental'
+            ]);
+
+            function MyCntrl($scope) {
+                $scope.colors = [
+                    '?',
+                    {name:'white', shade:'light'},
+                    {name:'red', shade:'dark'},
+                    {name:'blue', shade:'dark'},
+                    {name:'yellow', shade:'light'}
+                ];
+                $scope.color = $scope.colors[2]; // red
+            }
+        </script>
+        <style>
+            body > div {
+                width: 30%;
+                background-color: #ccc;
+                height: 100px;
+                position: relative;
+            }
+        </style>
+    </head>
+    <body ng-controller="MyCntrl">
+        <span ng-bind="color.name"></span>
+        <div el-select ng-model="color" ng-options="c.name for c in colors">
+            
+        </div>
+    </body>
+</html>
