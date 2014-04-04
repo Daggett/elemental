@@ -15,31 +15,20 @@ module.exports = function (grunt) {
         },
         copy: {
             dist: {
-                cwd: '.',
-                src: 'src/**/*.js',
-                dest: 'dist/modules/',
+                cwd: 'src/',
+                src: '**/*.js',
+                dest: 'dist/',
                 expand: true,
-                flatten: true,
                 files: [
                     '**/*.js'
                 ]
-            },
-            dev: {
-                cwd: '.',
-                src: 'src/**/*.js',
-                dest: 'dist/modules/',
-                expand: true,
-                flatten: true,
-                files: [
-                    '**/*.js'
-                ]  
             }
         },
         concat: {
             dist: {
                 src: [
-                    'dist/modules/*.js',
-                    '!dist/modules/*.min.js'
+                    'dist/*.js',
+                    '!dist/*.min.js'
                 ],
                 dest: 'dist/elemental.js',
             }
@@ -67,12 +56,51 @@ module.exports = function (grunt) {
                 files: [{
                     sourcemap: true,
                     expand: true,
-                    flatten: true,
                     cwd: 'src',
                     src: ['**/*.scss'],
-                    dest: 'dist/modules/',
+                    dest: 'dist/',
                     ext: '.css'
                 }]
+            }
+        },
+        watch: {
+            sass: {
+                files: ['src/**/*.scss'],
+                tasks: ['sass:dist']
+            },
+            serve: {
+                options: {
+                    livereload: true
+                },
+                files: [
+                    'dist/**/*.css',
+                    'src/**/*.js'
+                ]
+            },
+            grunt: {
+                files: [ 
+                    'Gruntfile.js'
+                ], 
+                options: {
+                    reload: true
+                }
+            }
+        },
+        concurrent: {
+            options: {
+                logConcurrentOutput: true
+            },
+            serve: {
+                tasks: ['watch:sass', 'watch:serve', 'watch:grunt']
+            }
+        },
+        connect: {
+            serve: {
+                options: {
+                    port: 9000,
+                    livereload: true,
+                    base: ['dist', 'src']
+                }
             }
         }
     });
@@ -85,8 +113,11 @@ module.exports = function (grunt) {
         'sass:dist'
     ]);
 
-    grunt.registerTask('dev', [
-        'copy:dev'
+    grunt.registerTask('serve', [
+        'clean:dist',
+        'sass:dist',
+        'connect:serve',
+        'concurrent:serve'
     ]);
 
     grunt.registerTask('default', [

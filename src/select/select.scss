@@ -1,3 +1,50 @@
-el-select {
+@import "compass/css3/box-sizing";
+@import "compass/css3/user-interface";
+
+
+$form-element-line-height: 2.2em;
+$form-element-padding: 0.4em;
+
+[el-tooltip] {
+    position: fixed;
+}
+
+[el-select] {
     display: inline-block;
+
+    [el-tooltip] {
+        [el-select-menu] {
+            min-width: 100%;
+        }
+    }
+}
+
+[el-select-menu] {
+    margin-top: 1px;
+    display: block;
+    border: 1px solid #999;
+    @include box-sizing(border-box);
+    max-height: $form-element-line-height * 4;
+    overflow-y: auto;
+
+    el-option {
+        display: block;
+        line-height: $form-element-line-height;
+        padding: 0 $form-element-padding;
+        @include user-select(none);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        &:hover {
+            background: #15ACCA;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        &[selected] {
+            background: #15ACCA;
+            color: #fff;
+        }
+    }
 }

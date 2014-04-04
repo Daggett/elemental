@@ -1,40 +1,59 @@
 <!doctype html>
 <html ng-app="app">
     <head>
-        <script src="file:///Users/daggett/projects/git/staticassets/dist/app/lib/angular/angular.js"></script>
-        <script src="file:///Users/daggett/projects/git/staticassets/dist/app/lib/angular-resource/angular-resource.js"></script>
-        <script src="../select.js"></script>
-        <script src="../../helpers/events.js"></script>
-        <script src="../../module.js"></script>
+
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.js"></script>
+
+        <link rel="stylesheet" href="/select/select.css">
+        <script src="/select/select.js"></script>
+        <script src="/helpers/events.js"></script>
+        <script src="/module.js"></script>
         <script>
             angular.module('app', [
                 'elemental'
             ]);
 
             function MyCntrl($scope) {
-                $scope.colors = [
+                $scope.colors1 = [
                     '?',
                     {name:'white', shade:'light'},
                     {name:'red', shade:'dark'},
                     {name:'blue', shade:'dark'},
-                    {name:'yellow', shade:'light'}
+                    {name:'yellow', shade:'light'},
+                    {name:'long long color name', shade:'light'}
                 ];
-                $scope.color = $scope.colors[2]; // red
+                $scope.colors2 = [
+                    '?',
+                    {name:'white', shade:'light'},
+                    {name:'red', shade:'dark'},
+                    {name:'blue', shade:'dark'},
+                    {name:'yellow', shade:'light'},
+                    {name:'magenta', shade:'light'},
+                    {name:'long long color name', shade:'light'}
+                ];
+                $scope.color1 = $scope.colors1[2]; // red
+                $scope.color2 = [$scope.colors2[3]]; // red
             }
         </script>
         <style>
-            body > div {
-                width: 30%;
-                background-color: #ccc;
-                height: 100px;
-                position: relative;
+            [el-select] {
+                width: 10%;
+            }
+
+            input, button {
+                width: 100%;
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
             }
         </style>
     </head>
     <body ng-controller="MyCntrl">
-        <span ng-bind="color.name"></span>
-        <div el-select ng-model="color" ng-options="c.name for c in colors">
-            
+        <div el-select ng-model="color1" el-options="c.name for c in colors1" ng-init="menuShow = false" menu-show="menuShow1">
+            <input ng-focus="menuShow1 = true" ng-blur="menuShow1 = false" placeholder="{{color1.name}}">
+        </div>
+        <div el-select multiple="multiple" ng-model="color2" el-options="c.name for c in colors2" menu-show="menuShow2">
+            <div tabindex="-1" ng-focus="menuShow2 = true" ng-blur="menuShow2 = false">{{(color2 | selectvalue : 'name' : ', ') || 'Select One'}}</div>
         </div>
     </body>
 </html>

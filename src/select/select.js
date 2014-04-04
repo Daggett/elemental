@@ -3,10 +3,89 @@ angular.module('elemental.select', [
     'elemental.helpers.events'
 ])
 
-.directive('elSelect', ['$compile', '$parse', function ($compile, $parse) {
+.filter('selectvalue', function () {
+    return function(input, path, delimiter) {
+        var list = [];
+
+        input = angular.isArray(input) ? input : [input];
+
+        angular.forEach(input, function (object) {
+            list.push(object[path]);
+        });
+
+        return list.join(delimiter || ', ');
+    };
+})
+
+.directive('elSelect', ['$compile', function ($compile) {
+    return {
+        transclude: true,
+        template: '<div el-watch-width="elementWidth"></div><ng-transclude></ng-transclude><div ng-show="menuShow" ng-style="{width: elementWidth + \'px\'}" el-tooltip><menu-placeholder></menu-placeholder></div>',
+        scope: {
+            menuShow: '='
+        },
+        compile: function(tElement, tAttrs, transclude) {
+            return function(scope, iElement, iAttrs) {
+                transclude(scope.$parent, function(clone) {
+                    tElement.find('ng-transclude').replaceWith(clone);
+                });
+
+                var menu = $compile('<div el-select-menu' + (!!tAttrs.multiple ? ' multiple="multiple"' : '') + ' ng-model="' + tAttrs.ngModel + '" el-options="' + tAttrs.elOptions + '"></div>')(scope.$parent);
+                tElement.find('menu-placeholder').replaceWith(menu);
+            };
+        }
+    }
+}])
+
+.directive('elSelectMenu', ['$compile', '$parse', function ($compile, $parse) {
     var noop = angular.noop,
         isDefined = angular.isDefined,
-        jqLite = angular.element;
+        jqLite = angular.element,
+        forEach = angular.forEach;
+
+    function hashKey(obj) {
+          var objType = typeof obj,
+              key;
+
+        if (objType == 'object' && obj !== null) {
+            if (typeof (key = obj.$$hashKey) == 'function') {
+                // must invoke on object to keep the right this
+                key = obj.$$hashKey();
+            } else if (key === undefined) {
+                key = obj.$$hashKey = nextUid();
+            }
+        } else {
+            key = obj;
+        }
+
+        return objType + ':' + key;
+    }
+
+    function HashMap(array){
+        forEach(array, this.put, this);
+    }
+
+    HashMap.prototype = {
+      put: function(key, value) {
+        this[hashKey(key)] = value;
+      },
+
+      get: function(key) {
+        return this[hashKey(key)];
+      },
+
+      remove: function(key) {
+        var value = this[key = hashKey(key)];
+        delete this[key];
+        return value;
+      }
+    };
+
+    var uid = 0;
+
+    function nextUid() {
+        return uid++;
+    }
 
     var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/,
         nullModelCtrl = {$setViewValue: noop};
@@ -14,7 +93,7 @@ angular.module('elemental.select', [
 
     return {
         restrict: 'A',
-        require: ['elSelect', '?ngModel'],
+        require: ['elSelectMenu', '?ngModel'],
         controller: ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
             var self = this,
                 optionsMap = {},
@@ -79,20 +158,34 @@ angular.module('elemental.select', [
             var selectCtrl = ctrls[0],
                 ngModelCtrl = ctrls[1],
                 multiple = attr.multiple,
-                optionsExp = attr.ngOptions,
+                optionsExp = attr.elOptions,
                 nullOption = false, // if false, user will not be able to select it (used by ngOptions)
                 emptyOption,
                 optionTemplate = jqLite('<el-option></el-option>'),
                 optGroupTemplate = jqLite('<el-optgroup></el-optgroup>'),
                 unknownOption = optionTemplate.clone();
 
-            element.on('click', function (event) {
-                if (event.target.tagName.toLowerCase() == 'el-option') {
-                    var target = jqLite(event.target);
-
-                    element.val(target.val());
-                    element.triggerHandler('change');
+            element.on('mousedown', function (event) {
+                if (multiple) {
+                    // Prevent changing focused element
+                    event.preventDefault();
                 }
+
+                if (event.target.tagName.toLowerCase() != 'el-option') return;
+
+                var target = jqLite(event.target);
+
+                if (!multiple) {
+                    element.find('el-option').removeAttr('selected');
+                    target.attr('selected', 'selected');
+                } else {
+                    var selected = target.attr('selected');
+                    target[selected ? 'removeAttr' : 'attr']('selected', 'selected');
+                    target.prop('selected', !selected);
+                }
+
+                element.val(target.val());
+                element.triggerHandler('change');
             });
 
             // find "null" option
@@ -166,8 +259,8 @@ angular.module('elemental.select', [
                         if (multiple) {
                             value = [];
                             for (groupIndex = 0, groupLength = optionGroupsCache.length;
-                                     groupIndex < groupLength;
-                                     groupIndex++) {
+                                 groupIndex < groupLength;
+                                 groupIndex++) {
                                 // list of options for that group. (first item has the parent)
                                 optionGroup = optionGroupsCache[groupIndex];
 
@@ -353,6 +446,7 @@ angular.module('elemental.select', [
                                 // lastElement.prop('selected') provided by jQuery has side-effects
                                 if (existingOption.selected !== option.selected) {
                                     lastElement.prop('selected', (existingOption.selected = option.selected));
+                                    lastElement[(existingOption.selected = option.selected) ? 'attr' : 'removeAttr']('selected', 'selected');
                                 }
                             } else {
                                 // grow elements

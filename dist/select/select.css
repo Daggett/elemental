@@ -1,0 +1,35 @@
+[el-tooltip] {
+  position: fixed; }
+
+[el-select] {
+  display: inline-block; }
+  [el-select] [el-tooltip] [el-select-menu] {
+    min-width: 100%; }
+
+[el-select-menu] {
+  margin-top: 1px;
+  display: block;
+  border: 1px solid #999;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  max-height: 8.8em;
+  overflow-y: auto; }
+  [el-select-menu] el-option {
+    display: block;
+    line-height: 2.2em;
+    padding: 0 0.4em;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; }
+    [el-select-menu] el-option:hover {
+      background: #15ACCA;
+      color: #fff;
+      cursor: pointer; }
+    [el-select-menu] el-option[selected] {
+      background: #15ACCA;
+      color: #fff; }
