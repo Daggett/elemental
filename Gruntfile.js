@@ -25,12 +25,19 @@ module.exports = function (grunt) {
             }
         },
         concat: {
-            dist: {
+            distJs: {
                 src: [
-                    'dist/*.js',
+                    'dist/**/*.js',
                     '!dist/*.min.js'
                 ],
                 dest: 'dist/elemental.js',
+            },
+            distCss: {
+                src: [
+                    'dist/**/*.css',
+                    '!dist/*.min.css'
+                ],
+                dest: 'dist/elemental.css'
             }
         },
         uglify: {
@@ -97,6 +104,7 @@ module.exports = function (grunt) {
         connect: {
             serve: {
                 options: {
+                    host: '*',
                     port: 9000,
                     livereload: true,
                     base: ['dist', 'src']
@@ -108,9 +116,10 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean:dist',
         'copy:dist',
-        'concat:dist',
+        'concat:distJs',
         'uglify:dist',
-        'sass:dist'
+        'sass:dist',
+        'concat:distCss'
     ]);
 
     grunt.registerTask('serve', [

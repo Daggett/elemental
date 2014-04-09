@@ -6,9 +6,18 @@
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.js"></script>
 
         <link rel="stylesheet" href="/select/select.css">
+        <link rel="stylesheet" href="/select-menu/select-menu.css">
+        <link rel="stylesheet" href="/tooltip/tooltip.css">
+        <script src="/select-menu/select-menu.js"></script>
         <script src="/select/select.js"></script>
         <script src="/helpers/events.js"></script>
+        <script src="/helpers/element.js"></script>
+        <script src="/tooltip/tooltip.js"></script>
         <script src="/module.js"></script>
+
+        <!-- <link rel="stylesheet" href="/elemental.css">
+        <script src="/elemental.js"></script> -->
+
         <script>
             angular.module('app', [
                 'elemental'
@@ -16,7 +25,7 @@
 
             function MyCntrl($scope) {
                 $scope.colors1 = [
-                    '?',
+                    '',
                     {name:'white', shade:'light'},
                     {name:'red', shade:'dark'},
                     {name:'blue', shade:'dark'},
@@ -24,21 +33,45 @@
                     {name:'long long color name', shade:'light'}
                 ];
                 $scope.colors2 = [
-                    '?',
                     {name:'white', shade:'light'},
                     {name:'red', shade:'dark'},
                     {name:'blue', shade:'dark'},
                     {name:'yellow', shade:'light'},
                     {name:'magenta', shade:'light'},
-                    {name:'long long color name', shade:'light'}
+                    {name:'long', shade:'light'}
                 ];
-                $scope.color1 = $scope.colors1[2]; // red
-                $scope.color2 = [$scope.colors2[3]]; // red
+                $scope.colors3 = [
+                    {name:'white', shade:'light'},
+                    {name:'red', shade:'dark'},
+                    {name:'blue', shade:'dark'}
+                ];
+                $scope.color1 = ''; 
+                $scope.color2 = [$scope.colors2[3]]; 
+                $scope.color3 = $scope.colors3[2]; 
+                $scope.color0 = $scope.colors3[0];
             }
         </script>
         <style>
-            [el-select] {
+            html, body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            body > .main {
+                overflow-y: auto;
+                height: 100%;
+            }
+
+            body > .main > div {
+                height: 200%;
+            }
+
+            body > .main > div > div {
                 width: 10%;
+                display: inline-block;
+                vertical-align: top;
             }
 
             input, button {
@@ -47,13 +80,23 @@
                 -moz-box-sizing: border-box;
             }
         </style>
+
     </head>
     <body ng-controller="MyCntrl">
-        <div el-select ng-model="color1" el-options="c.name for c in colors1" ng-init="menuShow = false" menu-show="menuShow1">
-            <input ng-focus="menuShow1 = true" ng-blur="menuShow1 = false" placeholder="{{color1.name}}">
-        </div>
-        <div el-select multiple="multiple" ng-model="color2" el-options="c.name for c in colors2" menu-show="menuShow2">
-            <div tabindex="-1" ng-focus="menuShow2 = true" ng-blur="menuShow2 = false">{{(color2 | selectvalue : 'name' : ', ') || 'Select One'}}</div>
+        <div class="main">
+            <div>
+                <div el-select-menu ng-model="color1" el-options="c.name for c in colors1"></div>
+                <div el-select el-tabindex="1" ng-model="color1" el-options="c.name for c in colors1"></div>
+                <div el-select el-tabindex="2" multiple="true" ng-model="color2" el-options="c.name for c in colors2"></div>
+                <div el-select el-tabindex="3" ng-model="color3" el-options="c.name for c in colors3"></div>
+                <div>
+                    <input placeholder="{{placeholder}}" ng-click="showMenu = true" ng-focus="showMenu = true" ng-blur="showMenu = false">
+                    <div ng-mousedown="showMenu = false" el-select-menu display-value="placeholder" ng-show="showMenu" ng-model="color0" el-options="c.name for c in colors3"></div>
+                </div>
+                <div el-select-menu el-tabindex="4" ng-model="color3" el-options="c.name for c in colors3">
+                    <el-option value="">All</el-option>
+                </div>
+            </div>
         </div>
     </body>
 </html>

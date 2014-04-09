@@ -1,0 +1,30 @@
+[el-select-menu] {
+  margin: 0;
+  display: inline-block;
+  border: 1px solid #bbb;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+  [el-select-menu] el-option {
+    margin: 0;
+    display: block;
+    height: 2.2em;
+    line-height: 2.2em;
+    padding: 0 0.4em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+    [el-select-menu] el-option:hover {
+      background: #15ACCA;
+      color: #fff;
+      cursor: pointer; }
+    [el-select-menu] el-option[selected] {
+      background: #15ACCA;
+      color: #fff; }

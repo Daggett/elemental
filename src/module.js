@@ -1,4 +1,6 @@
 angular.module('elemental', [
-    'elemental.select'
+    'elemental.tooltip',
+    'elemental.select',
+    'elemental.select-menu'
 ]);
 
