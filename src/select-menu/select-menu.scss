@@ -1,7 +1,7 @@
 @import "compass/css3/box-sizing";
 @import "compass/css3/user-interface";
 
-$form-element-line-height: 2.2em;
+$form-element-line-height: 2.5em;
 $form-element-padding: 0.4em;
 
 [el-select-menu] {
@@ -9,6 +9,7 @@ $form-element-padding: 0.4em;
     display: inline-block;
     border: 1px solid #bbb;
     @include box-sizing(border-box);
+    background-color: #fff;
 
     el-option {
         margin: 0;
@@ -23,14 +24,13 @@ $form-element-padding: 0.4em;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        cursor: pointer;
 
         &:hover {
-            background: #15ACCA;
-            color: #fff;
-            cursor: pointer;
+            background: #ddd;
         }
 
-        &[selected] {
+        &.selected {
             background: #15ACCA;
             color: #fff;
         }

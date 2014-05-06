@@ -1,3 +1,94 @@
+angular.module('elemental.helpers.element', [])
+
+.directive("elElement", function () {
+    return {
+        restrict: 'A',
+        scope: false,
+        compile: function () {
+            return {
+                pre: function (scope, iElement, iAttrs) {
+                    scope[iAttrs.elElement] = iElement;
+                }
+            };
+        }
+    };
+});
+
+angular.module('elemental.helpers.events', [
+    'elemental.helpers.element'
+])
+
+// Directive to watch element's width, supposed to be used with empty element
+.directive('elWatchWidth', ['$compile', function ($compile) {
+    var devicePixelRatio = window.devicePixelRatio || 1;
+
+    return {
+        scope: {
+            elWatchWidth: '='
+        },
+        template: 
+            '<div style="overflow: hidden; width: 0; height: 0;">' +
+                '<div style="position: absolute; width: 100%; height: 1px; left: -9999px;">' +
+                    '<div el-element="checkDownscale" ng-scroll="listenDownscale($event)" style="overflow: scroll; height: 100%;">' +
+                        '<div style="width: 9999%; height: 9999px;"></div>' +
+                    '</div>' +
+                    '<div el-element="checkUpscale" ng-scroll="listenUpscale($event)" style="overflow: scroll; height: 100%;">' +
+                        '<div style="width: 9999px; height: 9999px;"></div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>',
+        link: function (scope, element, attrs) {
+            var checkDownscale = scope.checkDownscale,
+                checkUpscale = scope.checkUpscale;           
+
+            function updateScroll() {
+                checkDownscale[0].scrollLeft = checkDownscale[0].scrollWidth;
+                checkUpscale[0].scrollLeft = checkUpscale[0].scrollWidth;
+            }
+
+            scope.listenUpscale = function () {
+                updateScroll();
+                scope.elWatchWidth = element[0].clientWidth;
+            }
+
+            scope.listenDownscale = function () {
+                updateScroll();
+            }
+
+            updateScroll();
+        }
+    }
+}]);
+
+angular.forEach('scroll select overflow underflow'.split(' '), function (eventName) {
+    var directiveName = 'ng' + eventName.charAt(0).toUpperCase() + eventName.slice(1);
+
+    angular.module('elemental.helpers.events')
+    .directive(directiveName, ['$parse', function ($parse) {
+        return {
+            scope: false,
+            link: function (scope, element, attrs) {
+                var fn = $parse(attrs[directiveName]);
+
+                element.on(eventName, function (event) {
+                    fn(scope, {$event: event});
+                    scope.$apply();
+                });
+            }
+        }
+    }])
+
+});
+
+angular.module('elemental', [
+    'elemental.helpers.element',
+    'elemental.helpers.events',
+    'elemental.tooltip',
+    'elemental.select',
+    'elemental.select-menu'
+]);
+
+
 angular.module('elemental.select-menu', [
     'ngResource'
 ])
@@ -567,4 +658,194 @@ angular.module('elemental.select-menu', [
             }
         }
     };
+}]);
+
+angular.module('elemental.select', [
+    'elemental.tooltip',
+    'elemental.select-menu',
+    'elemental.helpers.events'
+])
+
+.filter('selectvalue', ['$parse', function ($parse) {
+    return function(input, path, delimiter) {
+        var list = [];
+
+        input = angular.isArray(input) ? input : [input];
+
+        delimiter = delimiter || ', ';
+
+        var fn = path ? $parse(path) : function(a){return a};
+
+        angular.forEach(input, function (item) {
+            list.push(fn(item));
+        });
+
+        return list.join(delimiter || ', ');
+    };
+}])
+
+.directive('elSelect', ['$compile', '$parse', function ($compile, $parse) {
+    return {
+        scope: {
+            multiple: '@',
+            tabindex: '@elTabindex',
+            options: '@elOptions',
+            pack: '@pack', // delegate pack property for tooltip
+            model: '=ngModel'
+        },
+        require: '?ngModel',
+        transclude: true,
+        template: 
+            '<div el-tooltip-anchor>' + 
+                '<div el-watch-width="elementWidth"></div>' +
+                '<el-display-value tabindex="{{tabindex}}" onmousedown="this.focus(); /* IE hack */" ng-mousedown="menuShow = true;" ng-focus="menuShow = true" ng-blur="menuShow = false" class="display-value">' + 
+                    '<span class="el-carrot"><span></span></span>' + 
+                    '<span class="el-text">{{output | selectvalue}}</span>' + 
+                '</el-display-value>' + 
+                '<div class="el-select-tooltip" el-tooltip pack="{{pack}}" ng-show="menuShow">' +
+                    '<div el-element="menu" ng-transclude ng-style="{\'min-width\': elementWidth + \'px\'}" class="el-overlapped" ng-mousedown="$event.preventDefault();" ng-select="multiple ? null : (menuShow = false)" unselectable="on" display-value="output" el-select-menu multiple="{{multiple}}" ng-model="model" el-options="{{options}}" options-scope="$parent"></div>' + 
+                '</div>' +
+            '</div>',
+        compile: function () {
+            return {
+                pre: function (scope, element, attr, ctrl) {
+                    scope.tabindex = scope.tabindex || 0;
+                }
+            }
+        }
+    }
+}]);
+
+
+angular.module('elemental.tooltip', [
+    
+])
+
+.directive('elTooltipAnchor', [function () {
+    return {
+        scope: false,
+        controller: ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
+            var self = this;
+
+            self.getPosition = function () {
+                var position = $element[0].getBoundingClientRect(),
+                    windowWidth = document.documentElement.clientWidth;
+
+                position = {
+                    left: position.left,
+                    top: position.top,
+                    leftWidth: position.right,
+                    topWidth: position.bottom,
+                    right: windowWidth - position.right
+                }
+
+                return position;
+            };
+        }],
+        link: function (scope, element) {
+
+        }
+    }
+}])
+
+.directive('elTooltip', ['$parse', '$document', '$window', '$compile', function ($parse, $document, $window, $compile) {
+    var jqLite = angular.element;
+
+    return {
+        scope: false,
+        require: ['^elTooltipAnchor', 'elTooltip'],
+
+        controller: ['$element', '$scope', '$attrs', function ($element, $scope, $attrs) {
+            var self = this,
+                ctrl,
+                overlay,
+                pack;
+
+            self.init = function (_ctrl, _pack) {
+                ctrl = _ctrl;
+                pack = $attrs.pack
+                overlay = self.$overlay = $compile('<el-tooltip-overlay>')($scope);
+            };
+
+            self.updatePosition = function () {
+                pos = ctrl[0].getPosition();
+
+                var left, top, right;
+
+                top = pos.topWidth;
+
+                console.log(pack)
+
+                switch (pack) {
+                    case 'end':
+                        right = pos.right;
+                        break;
+                    case 'start': default:
+                        left = pos.left;
+                        break;
+                }
+
+                $element.css({
+                    top: top ? (top + 'px') : 'auto', 
+                    left: left ? (left + 'px') : 'auto', 
+                    right: right ? (right + 'px') : 'auto'
+                });
+            };
+
+            self.show = function () {
+                var el = $element;
+
+                jqLite(document).on('scroll', self.updatePosition);
+                jqLite(window).on('resize', self.updatePosition);
+
+                jqLite(document.body).append(overlay);
+                overlay.on('mousedown', self.mousedown);
+
+                ctrl[1].updatePosition();
+            };
+
+            self.mousedown = angular.noop;
+
+            self.hide = function () {
+                var el = $element;
+
+                jqLite(document).off('scroll', self.updatePosition);
+                jqLite(window).off('resize', self.updatePosition);
+
+                overlay.off('mousedown', self.mousedown);
+                overlay.remove();
+            };
+
+            $scope.$on('$destroy', function() {
+                $element.remove();
+            });
+        }],
+
+        compile: function (element, attr, transclude) {
+
+
+            return function (scope, element, attr, ctrl) {
+                ctrl[1].init(ctrl, attr.pack);
+                jqLite(document.body).append(element);
+
+                attr.$observe('ngShow', function (expr) {
+                    scope.$watch(function () {
+                        return $parse(expr)(scope);
+                    }, function (show) {
+                        if (!!show) {
+                            ctrl[1].show();
+                        } else {
+                            ctrl[1].hide();
+                        }
+                    })
+                });
+
+                var fn = $parse(attr.maskMousedown);
+                ctrl[1].mousedown = function (event) {
+                    fn(scope, {$event: event});
+                    scope.$apply();
+                };
+            }
+        }
+    }
 }]);

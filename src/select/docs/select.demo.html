@@ -49,6 +49,8 @@
                 $scope.color2 = [$scope.colors2[3]]; 
                 $scope.color3 = $scope.colors3[2]; 
                 $scope.color0 = $scope.colors3[0];
+
+                $scope.test = 'test1';
             }
         </script>
         <style>
@@ -56,7 +58,7 @@
                 margin: 0;
                 padding: 0;
                 height: 100%;
-                overflow: hidden;
+                /*overflow: hidden;*/
             }
 
             body > .main {
@@ -64,7 +66,7 @@
                 height: 100%;
             }
 
-            body > .main > div {
+            body > .main/* > div*/ {
                 height: 200%;
             }
 
@@ -85,17 +87,28 @@
     <body ng-controller="MyCntrl">
         <div class="main">
             <div>
-                <div el-select-menu ng-model="color1" el-options="c.name for c in colors1"></div>
-                <div el-select el-tabindex="1" ng-model="color1" el-options="c.name for c in colors1"></div>
-                <div el-select el-tabindex="2" multiple="true" ng-model="color2" el-options="c.name for c in colors2"></div>
-                <div el-select el-tabindex="3" ng-model="color3" el-options="c.name for c in colors3"></div>
-                <div>
-                    <input placeholder="{{placeholder}}" ng-click="showMenu = true" ng-focus="showMenu = true" ng-blur="showMenu = false">
-                    <div ng-mousedown="showMenu = false" el-select-menu display-value="placeholder" ng-show="showMenu" ng-model="color0" el-options="c.name for c in colors3"></div>
+                <div ng-bind="test"></div>
+                <div el-select-menu ng-model="test">
+                    <el-option value="test1">test1</el-option>
+                    <el-option value="test2">test2</el-option>
                 </div>
-                <div el-select-menu el-tabindex="4" ng-model="color3" el-options="c.name for c in colors3">
+                <div el-select pack="end" el-tabindex="1" ng-model="color1" el-options="c.name for c in colors1"></div>
+                <div el-select el-tabindex="2" multiple="true" ng-model="color2" el-options="c.name for c in colors2"></div>
+                <div el-select required el-tabindex="3" ng-model="color3" el-options="c.name for c in colors3">
                     <el-option value="">All</el-option>
                 </div>
+                <span ng-bind="color3.name"></span>
+                <div>
+                    <input placeholder="{{placeholder}}" ng-click="showMenu = true" ng-focus="showMenu = true" ng-blur="showMenu = false">
+                    <div ng-mousedown="showMenu = false" el-select-menu display-value="placeholder" ng-show="showMenu" ng-model="color3" el-options="c.name for c in colors3"></div>
+                </div>
+                <div el-select-menu required el-tabindex="4" ng-model="color3" el-options="c.name for c in colors3">
+                    <el-option value="">All</el-option>
+                </div>
+                <select el-tabindex="5" ng-model="color3" ng-options="c.name for c in colors3">
+                    <option value="">All</option>
+                </select>
+                <span ng-bind="color3.name"></span>
             </div>
         </div>
     </body>

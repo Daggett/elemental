@@ -1,9 +1,12 @@
+@import "compass/css3/transition";
+
 [el-tooltip] {
     position: fixed;
     z-index: 100;
 }
 
 body > el-tooltip-overlay {
+    display: block;
     position: fixed;
     z-index: 99;
     left: 0;

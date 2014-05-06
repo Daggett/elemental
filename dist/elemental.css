@@ -1,3 +1,34 @@
+[el-select-menu] {
+  margin: 0;
+  display: inline-block;
+  border: 1px solid #bbb;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: #fff; }
+  [el-select-menu] el-option {
+    margin: 0;
+    display: block;
+    height: 2.5em;
+    line-height: 2.5em;
+    padding: 0 0.4em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer; }
+    [el-select-menu] el-option:hover {
+      background: #ddd; }
+    [el-select-menu] el-option.selected {
+      background: #15ACCA;
+      color: #fff; }
+
 [el-select] {
   display: inline-block;
   vertical-align: baseline;
@@ -46,3 +77,17 @@
 @media screen and (min-width: 0 \0) {
   [el-select-menu].el-overlapped el-option {
     margin-right: 0; } }
+
+
+[el-tooltip] {
+  position: fixed;
+  z-index: 100; }
+
+body > el-tooltip-overlay {
+  display: block;
+  position: fixed;
+  z-index: 99;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0; }

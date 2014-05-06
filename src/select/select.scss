@@ -1,33 +1,64 @@
 @import "compass/css3/box-sizing";
 @import "compass/css3/user-interface";
 
-$form-element-line-height: 2.2em;
+$form-element-line-height: 2.5em;
 $form-element-padding: 0.4em;
 
 [el-select] {
     display: inline-block;
-    vertical-align: top;
+    vertical-align: baseline;
+    min-width: 6em;
 
     .display-value {
+        display: block;
+        outline: none;
         height: $form-element-line-height;
         line-height: $form-element-line-height;
         border: 1px solid #bbb;
         @include box-sizing(border-box);
         cursor: default;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        padding: 0 $form-element-padding;
         @include user-select(none);
-    }
 
-    [el-select-menu] {
-        margin-top: 1px;
-        display: block;
-        background: white;
-        overflow: hidden;
-        max-height: $form-element-line-height * 4;
-        @include box-sizing(border-box);
-        overflow-y: auto;
+        & > .el-text {
+            padding: 0 $form-element-padding;
+            display: block;
+            overflow: hidden;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        & > .el-carrot {
+            display: block;
+            width: 2em;
+            border: none;
+            height: 100%;
+            float: right;
+            background-color: #15ACCA;
+        }
+
+        &:focus {
+            border-color: rgb(107, 185, 226);
+        }
+    }
+}
+
+
+[el-select-menu].el-overlapped {
+    margin-top: 1px;
+    display: inline-block; // Don't touch, IE magic to fix problem with jumping scroll
+    background: white;
+    overflow: hidden;
+    max-height: $form-element-line-height * 8;
+    overflow-y: auto;
+}
+
+// XXX: hack to fix scroll overflowing for non-IE browsers
+[el-select-menu].el-overlapped el-option {
+    margin-right: 16px;
+}
+@media screen and (min-width:0\0) {
+    [el-select-menu].el-overlapped el-option {
+        margin-right: 0;   
     }
 }
