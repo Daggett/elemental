@@ -10,7 +10,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         clean: {
             dist: {
-                src: ['dist']
+                src: ['dist/**/*']
             }
         },
         copy: {

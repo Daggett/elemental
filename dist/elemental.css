@@ -1,9 +1,10 @@
+
 [el-select-menu] {
   margin: 0;
   display: inline-block;
   border: 1px solid #bbb;
-  -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
   background-color: #fff; }
   [el-select-menu] el-option {
@@ -12,11 +13,12 @@
     height: 2.5em;
     line-height: 2.5em;
     padding: 0 0.4em;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none;
-    -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
     white-space: nowrap;
@@ -39,12 +41,13 @@
     height: 2.5em;
     line-height: 2.5em;
     border: 1px solid #bbb;
-    -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     cursor: default;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none; }
     [el-select] .display-value > .el-text {
       padding: 0 0.4em;
